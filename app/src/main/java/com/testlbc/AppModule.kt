@@ -1,9 +1,12 @@
 package com.testlbc
 
+import android.app.Application
+import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.testlbc.core.network.RetrofitInterceptor
-import com.testlbc.core.network.repository.remote.SongService
+import com.testlbc.data.repository.local.AppDatabase
+import com.testlbc.data.repository.remote.SongService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
@@ -19,7 +22,7 @@ val viewModelModule: Module = module {
 }
 
 val dataModule: Module = module {
-
+    single { roomDatabase(get()) }
 }
 
 val networkModule: Module = module {
@@ -32,6 +35,9 @@ val networkModule: Module = module {
 
     single { songService(get()) }
 }
+
+private fun roomDatabase(application: Application) =
+    Room.databaseBuilder(application, AppDatabase::class.java, AppDatabase.DATABASE_NAME).build()
 
 private fun retrofit(client: OkHttpClient, gson: Gson) = Retrofit.Builder()
     .client(client)

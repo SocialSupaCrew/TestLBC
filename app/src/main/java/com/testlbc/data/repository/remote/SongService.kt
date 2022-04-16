@@ -1,4 +1,4 @@
-package com.testlbc.core.network.repository.remote
+package com.testlbc.data.repository.remote
 
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Single
