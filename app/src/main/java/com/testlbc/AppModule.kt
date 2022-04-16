@@ -1,10 +1,15 @@
 package com.testlbc
 
 import android.app.Application
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.testlbc.core.network.RetrofitInterceptor
+import com.testlbc.data.interactor.AlbumMapper
+import com.testlbc.data.interactor.GetAlbumsInteractor
+import com.testlbc.data.interactor.GetAlbumsInteractorImpl
 import com.testlbc.data.repository.SongRepository
 import com.testlbc.data.repository.SongRepositoryImpl
 import com.testlbc.data.repository.local.AppDatabase
@@ -13,8 +18,11 @@ import com.testlbc.data.repository.local.SongLocalDataSourceImpl
 import com.testlbc.data.repository.remote.SongRemoteDataSource
 import com.testlbc.data.repository.remote.SongRemoteDataSourceImpl
 import com.testlbc.data.repository.remote.SongService
+import com.testlbc.ui.albumlist.AlbumListViewModel
+import com.testlbc.ui.albumlist.AlbumListViewModelImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -24,10 +32,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 private const val BASE_URL = "https://static.leboncoin.fr"
 
 val viewModelModule: Module = module {
-
+    viewModel<AlbumListViewModel> {
+        AlbumListViewModelImpl(MediatorLiveData(), MutableLiveData(), get())
+    }
 }
 
 val dataModule: Module = module {
+    factory<GetAlbumsInteractor> { GetAlbumsInteractorImpl(get(), get()) }
+    factory { AlbumMapper() }
+
     single<SongRepository> { SongRepositoryImpl(get(), get()) }
     single<SongRemoteDataSource> { SongRemoteDataSourceImpl(get()) }
     single<SongLocalDataSource> { SongLocalDataSourceImpl(get()) }
