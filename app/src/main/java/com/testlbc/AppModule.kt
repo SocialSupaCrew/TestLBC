@@ -5,7 +5,13 @@ import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.testlbc.core.network.RetrofitInterceptor
+import com.testlbc.data.repository.SongRepository
+import com.testlbc.data.repository.SongRepositoryImpl
 import com.testlbc.data.repository.local.AppDatabase
+import com.testlbc.data.repository.local.SongLocalDataSource
+import com.testlbc.data.repository.local.SongLocalDataSourceImpl
+import com.testlbc.data.repository.remote.SongRemoteDataSource
+import com.testlbc.data.repository.remote.SongRemoteDataSourceImpl
 import com.testlbc.data.repository.remote.SongService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -22,6 +28,10 @@ val viewModelModule: Module = module {
 }
 
 val dataModule: Module = module {
+    single<SongRepository> { SongRepositoryImpl(get(), get()) }
+    single<SongRemoteDataSource> { SongRemoteDataSourceImpl(get()) }
+    single<SongLocalDataSource> { SongLocalDataSourceImpl(get()) }
+
     single { roomDatabase(get()) }
 }
 
