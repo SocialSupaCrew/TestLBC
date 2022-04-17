@@ -61,7 +61,12 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation "com.jakewharton.timber:timber:$timber_version"
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation "androidx.arch.core:core-testing:$arch_core_testing_version"
+    testImplementation "org.mockito:mockito-core:$mokckito_version"
+    testImplementation "org.mockito:mockito-inline:$mokckito_version"
+    testImplementation "com.google.truth:truth:$truth_version"
+    testImplementation "io.insert-koin:koin-test:$koin_version"
+    testImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.1.3"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"
 }
