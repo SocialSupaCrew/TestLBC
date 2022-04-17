@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestLBC">
         <activity
+            android:name=".ui.albumdetail.AlbumDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.albumlist.AlbumListActivity"
             android:exported="true">
             <intent-filter>

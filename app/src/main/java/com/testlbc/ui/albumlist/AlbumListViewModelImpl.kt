@@ -5,7 +5,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.testlbc.core.EventPath
 import com.testlbc.data.interactor.GetAlbumsInteractor
-import timber.log.Timber
 
 class AlbumListViewModelImpl(
     private val state: MediatorLiveData<State>,
@@ -21,8 +20,8 @@ class AlbumListViewModelImpl(
 
     override fun getNavigation(): LiveData<EventPath<Path>> = navigation
 
-    override fun navigateTo(path: EventPath<Path>) {
-        navigation.value = path
+    override fun navigateTo(path: Path) {
+        navigation.value = path.toEventPath()
     }
 
     override fun fetchAlbums() {
@@ -30,7 +29,7 @@ class AlbumListViewModelImpl(
     }
 
     override fun onAlbumClicked(albumId: Int) {
-        Timber.d("onAlbumClicked: $albumId")
+        navigateTo(Path.AlbumDetail(albumId))
     }
 
     override fun onCleared() {
@@ -39,10 +38,9 @@ class AlbumListViewModelImpl(
     }
 
     private fun onFetchAlbumsResult(result: GetAlbumsInteractor.Result) {
-        when (result) {
-            is GetAlbumsInteractor.Result.OnSuccess ->
-                state.value = State.AlbumsLoaded(result.albums)
-            GetAlbumsInteractor.Result.OnError -> state.value = State.ShowError
+        state.value = when (result) {
+            is GetAlbumsInteractor.Result.OnSuccess -> State.AlbumsLoaded(result.albums)
+            GetAlbumsInteractor.Result.OnError -> State.ShowError
         }
     }
 }

@@ -7,9 +7,7 @@ import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.testlbc.core.network.RetrofitInterceptor
-import com.testlbc.data.interactor.AlbumMapper
-import com.testlbc.data.interactor.GetAlbumsInteractor
-import com.testlbc.data.interactor.GetAlbumsInteractorImpl
+import com.testlbc.data.interactor.*
 import com.testlbc.data.repository.SongRepository
 import com.testlbc.data.repository.SongRepositoryImpl
 import com.testlbc.data.repository.local.AppDatabase
@@ -18,6 +16,8 @@ import com.testlbc.data.repository.local.SongLocalDataSourceImpl
 import com.testlbc.data.repository.remote.SongRemoteDataSource
 import com.testlbc.data.repository.remote.SongRemoteDataSourceImpl
 import com.testlbc.data.repository.remote.SongService
+import com.testlbc.ui.albumdetail.AlbumDetailViewModel
+import com.testlbc.ui.albumdetail.AlbumDetailViewModelImpl
 import com.testlbc.ui.albumlist.AlbumListViewModel
 import com.testlbc.ui.albumlist.AlbumListViewModelImpl
 import okhttp3.OkHttpClient
@@ -35,10 +35,14 @@ val viewModelModule: Module = module {
     viewModel<AlbumListViewModel> {
         AlbumListViewModelImpl(MediatorLiveData(), MutableLiveData(), get())
     }
+    viewModel<AlbumDetailViewModel> { (albumId: Int) ->
+        AlbumDetailViewModelImpl(MediatorLiveData(), MutableLiveData(), get(), albumId)
+    }
 }
 
 val dataModule: Module = module {
     factory<GetAlbumsInteractor> { GetAlbumsInteractorImpl(get(), get()) }
+    factory<GetAlbumInteractor> { GetAlbumInteractorImpl(get()) }
     factory { AlbumMapper() }
 
     single<SongRepository> { SongRepositoryImpl(get(), get()) }

@@ -2,39 +2,37 @@ package com.testlbc.data.interactor
 
 import com.testlbc.core.domain.BaseInteractor
 import com.testlbc.core.domain.Interactor
-import com.testlbc.data.interactor.GetAlbumsInteractor.Result
+import com.testlbc.data.interactor.GetAlbumInteractor.Result
 import com.testlbc.data.repository.SongRepository
-import com.testlbc.ui.albumlist.AlbumListViewModel.AlbumVM
+import com.testlbc.data.repository.local.Song
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-interface GetAlbumsInteractor : Interactor<Result> {
+interface GetAlbumInteractor : Interactor<Result> {
 
     sealed class Result {
-        data class OnSuccess(val albums: List<AlbumVM>) : Result()
+        data class OnSuccess(val songs: List<Song>) : Result()
         object OnError : Result()
     }
 
-    fun execute()
+    fun execute(albumId: Int)
 }
 
-class GetAlbumsInteractorImpl(
-    private val repository: SongRepository,
-    private val mapper: AlbumMapper
-) : BaseInteractor<Result>(), GetAlbumsInteractor {
+class GetAlbumInteractorImpl(
+    private val repository: SongRepository
+) : BaseInteractor<Result>(), GetAlbumInteractor {
 
-    override fun execute() {
-        repository.get()
-            .map(mapper::map)
+    override fun execute(albumId: Int) {
+        repository.getSongs(albumId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::onSuccess, ::onError)
             .track()
     }
 
-    private fun onSuccess(albums: List<AlbumVM>) {
-        liveData.value = Result.OnSuccess(albums)
+    private fun onSuccess(songs: List<Song>) {
+        liveData.value = Result.OnSuccess(songs)
     }
 
     private fun onError(throwable: Throwable) {

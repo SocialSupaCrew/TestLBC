@@ -3,10 +3,12 @@ package com.testlbc.ui.albumlist
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.testlbc.core.BaseActivity
+import com.testlbc.core.EventPathObserver
 import com.testlbc.databinding.ActivityAlbumListBinding
+import com.testlbc.ui.albumdetail.AlbumDetailActivity
+import com.testlbc.ui.albumlist.AlbumListViewModel.Path
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AlbumListActivity : BaseActivity() {
@@ -22,10 +24,13 @@ class AlbumListActivity : BaseActivity() {
         setContentView(binding.root)
 
         binding.albumList.layoutManager = LinearLayoutManager(this)
-        binding.albumList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL))
+        binding.albumList.addItemDecoration(
+            DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL)
+        )
         binding.albumList.adapter = adapter
 
         viewModel.getState().observe(this, ::applyState)
+        viewModel.getNavigation().observe(this, EventPathObserver { navigateTo(it as Path) })
 
         viewModel.fetchAlbums()
     }
@@ -38,7 +43,15 @@ class AlbumListActivity : BaseActivity() {
         }
     }
 
+    private fun navigateTo(path: Path) = when (path) {
+        is Path.AlbumDetail -> openAlbumDetail(path.albumId)
+    }
+
     private fun showError() {
         Snackbar.make(binding.root, "Error while loading albums", Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun openAlbumDetail(albumId: Int) {
+        startActivity(AlbumDetailActivity.newIntent(this, albumId))
     }
 }

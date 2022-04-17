@@ -11,6 +11,8 @@ interface SongRepository {
 
     fun synchronise(): Single<List<SongJson>>
     fun get(): Flowable<List<Song>>
+    fun getSongs(albumId: Int): Flowable<List<Song>>
+    fun getSong(songId: Int): Single<Song>
 }
 
 class SongRepositoryImpl(
@@ -24,5 +26,13 @@ class SongRepositoryImpl(
 
     override fun get(): Flowable<List<Song>> {
         return local.get()
+    }
+
+    override fun getSongs(albumId: Int): Flowable<List<Song>> {
+        return local.getSongs(albumId)
+    }
+
+    override fun getSong(songId: Int): Single<Song> {
+        return local.getSong(songId)
     }
 }
