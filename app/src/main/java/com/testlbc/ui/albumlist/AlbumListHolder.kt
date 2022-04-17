@@ -25,6 +25,7 @@ class AlbumListHolder(
             .into(binding.thumbnail)
 
         binding.albumName.text = album.name
+        binding.songsCount.text = itemView.context.getString(R.string.songs_count, album.songCount)
 
         binding.root.setOnClickListener { listener.onAlbumClicked(album.id) }
     }

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Test LBC</string>
+
+    <string name="songs_count">%d songs</string>
 </resources>

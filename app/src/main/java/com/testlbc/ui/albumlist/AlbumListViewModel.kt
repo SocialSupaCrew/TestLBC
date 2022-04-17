@@ -22,6 +22,7 @@ abstract class AlbumListViewModel : BaseViewModel<State, Path>(), AlbumListHolde
     data class AlbumVM(
         val id: Int,
         val name: String,
-        val thumbnailUrl: String
+        val thumbnailUrl: String,
+        val songCount: Int
     )
 }

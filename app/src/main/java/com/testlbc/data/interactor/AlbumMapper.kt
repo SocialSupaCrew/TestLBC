@@ -11,7 +11,8 @@ class AlbumMapper {
                 AlbumVM(
                     it.key,
                     "$ALBUM_NAME ${it.key}",
-                    it.value.first().thumbnailUrl
+                    it.value.first().thumbnailUrl,
+                    it.value.size
                 )
             }
     }

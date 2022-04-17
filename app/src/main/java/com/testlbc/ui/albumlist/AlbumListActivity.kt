@@ -1,7 +1,9 @@
 package com.testlbc.ui.albumlist
 
 import android.os.Bundle
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.testlbc.core.BaseActivity
 import com.testlbc.databinding.ActivityAlbumListBinding
@@ -19,8 +21,8 @@ class AlbumListActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.albumList.layoutManager =
-            GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false)
+        binding.albumList.layoutManager = LinearLayoutManager(this)
+        binding.albumList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL))
         binding.albumList.adapter = adapter
 
         viewModel.getState().observe(this, ::applyState)
