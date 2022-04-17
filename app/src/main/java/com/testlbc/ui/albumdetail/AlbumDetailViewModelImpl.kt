@@ -33,6 +33,11 @@ class AlbumDetailViewModelImpl(
         navigateTo(Path.SongDetail(songId))
     }
 
+    override fun onCleared() {
+        interactor.cleanUp()
+        super.onCleared()
+    }
+
     private fun onFetchSongsResult(result: GetAlbumInteractor.Result) {
         state.value = when (result) {
             is GetAlbumInteractor.Result.OnSuccess -> State.SongsLoaded(result.songs)

@@ -20,6 +20,8 @@ import com.testlbc.ui.albumdetail.AlbumDetailViewModel
 import com.testlbc.ui.albumdetail.AlbumDetailViewModelImpl
 import com.testlbc.ui.albumlist.AlbumListViewModel
 import com.testlbc.ui.albumlist.AlbumListViewModelImpl
+import com.testlbc.ui.songdetail.SongDetailViewModel
+import com.testlbc.ui.songdetail.SongDetailViewModelImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -38,11 +40,15 @@ val viewModelModule: Module = module {
     viewModel<AlbumDetailViewModel> { (albumId: Int) ->
         AlbumDetailViewModelImpl(MediatorLiveData(), MutableLiveData(), get(), albumId)
     }
+    viewModel<SongDetailViewModel> { (songId: Int) ->
+        SongDetailViewModelImpl(MediatorLiveData(), MutableLiveData(), get(), songId)
+    }
 }
 
 val dataModule: Module = module {
     factory<GetAlbumsInteractor> { GetAlbumsInteractorImpl(get(), get()) }
     factory<GetAlbumInteractor> { GetAlbumInteractorImpl(get()) }
+    factory<GetSongInteractor> { GetSongInteractorImpl(get()) }
     factory { AlbumMapper() }
 
     single<SongRepository> { SongRepositoryImpl(get(), get()) }

@@ -3,16 +3,17 @@ package com.testlbc.ui.albumdetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.testlbc.core.BaseActivity
 import com.testlbc.core.EventPathObserver
 import com.testlbc.databinding.ActivityAlbumDetailBinding
 import com.testlbc.ui.albumdetail.AlbumDetailViewModel.Path
 import com.testlbc.ui.albumdetail.AlbumDetailViewModel.State
+import com.testlbc.ui.songdetail.SongDetailActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class AlbumDetailActivity : AppCompatActivity() {
+class AlbumDetailActivity : BaseActivity() {
 
     private val albumId by lazy { intent.getIntExtra(EXTRA_ALBUM_ID, 0) }
 
@@ -47,7 +48,7 @@ class AlbumDetailActivity : AppCompatActivity() {
     }
 
     private fun openSongDetail(songId: Int) {
-        // TODO:
+        startActivity(SongDetailActivity.newIntent(this, songId))
     }
 
     companion object {

@@ -25,6 +25,8 @@ class AlbumDetailHolder(
             .load(song.thumbnailUrl)
             .placeholder(R.drawable.placeholder_song)
             .into(binding.thumbnail)
+
+        binding.root.setOnClickListener { listener.onSongClicked(song.id) }
     }
 
     interface Listener {
