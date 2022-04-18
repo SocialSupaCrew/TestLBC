@@ -1,6 +1,5 @@
 package com.testlbc.ui.songdetail
 
-import androidx.lifecycle.LiveData
 import com.testlbc.core.BaseViewModel
 import com.testlbc.core.EventPath
 import com.testlbc.data.repository.local.Song

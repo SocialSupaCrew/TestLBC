@@ -2,17 +2,17 @@ package com.testlbc.data.repository
 
 import com.testlbc.data.repository.local.Song
 import com.testlbc.data.repository.local.SongLocalDataSource
-import com.testlbc.data.repository.remote.SongJson
 import com.testlbc.data.repository.remote.SongRemoteDataSource
-import io.reactivex.Flowable
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 interface SongRepository {
 
-    fun synchronise(): Single<List<SongJson>>
-    fun get(): Flowable<List<Song>>
-    fun getSongs(albumId: Int): Flowable<List<Song>>
-    fun getSong(songId: Int): Single<Song>
+    suspend fun synchronise()
+    suspend fun get(): Flow<List<Song>>
+    suspend fun getSongs(albumId: Int): Flow<List<Song>>
+    suspend fun getSong(songId: Int): Song
 }
 
 class SongRepositoryImpl(
@@ -20,19 +20,19 @@ class SongRepositoryImpl(
     private val local: SongLocalDataSource
 ) : SongRepository {
 
-    override fun synchronise(): Single<List<SongJson>> {
-        return remote.get().doOnSuccess { local.save(it) }
+    override suspend fun synchronise() {
+        withContext(Dispatchers.IO) { local.save(remote.get()) }
     }
 
-    override fun get(): Flowable<List<Song>> {
-        return local.get()
+    override suspend fun get(): Flow<List<Song>> {
+        return withContext(Dispatchers.IO) { local.get() }
     }
 
-    override fun getSongs(albumId: Int): Flowable<List<Song>> {
-        return local.getSongs(albumId)
+    override suspend fun getSongs(albumId: Int): Flow<List<Song>> {
+        return withContext(Dispatchers.IO) { local.getSongs(albumId) }
     }
 
-    override fun getSong(songId: Int): Single<Song> {
-        return local.getSong(songId)
+    override suspend fun getSong(songId: Int): Song {
+        return withContext(Dispatchers.IO) { local.getSong(songId) }
     }
 }

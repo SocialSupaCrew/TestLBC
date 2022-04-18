@@ -5,8 +5,9 @@ import com.testlbc.core.domain.Interactor
 import com.testlbc.data.interactor.GetAlbumsInteractor.Result
 import com.testlbc.data.repository.SongRepository
 import com.testlbc.ui.albumlist.AlbumListViewModel.AlbumVM
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 interface GetAlbumsInteractor : Interactor<Result> {
@@ -16,7 +17,7 @@ interface GetAlbumsInteractor : Interactor<Result> {
         object OnError : Result()
     }
 
-    fun execute()
+    suspend fun execute()
 }
 
 class GetAlbumsInteractorImpl(
@@ -24,13 +25,16 @@ class GetAlbumsInteractorImpl(
     private val mapper: AlbumMapper
 ) : BaseInteractor<Result>(), GetAlbumsInteractor {
 
-    override fun execute() {
-        repository.get()
-            .map(mapper::map)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onSuccess, ::onError)
-            .track()
+    override suspend fun execute() {
+        withContext(Dispatchers.Main) {
+            try {
+                repository.get().collect {
+                    onSuccess(mapper.map(it))
+                }
+            } catch (e: Exception) {
+                onError(e)
+            }
+        }
     }
 
     private fun onSuccess(albums: List<AlbumVM>) {

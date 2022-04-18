@@ -1,46 +1,37 @@
 package com.testlbc.data.interactor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.google.common.truth.Truth.assertThat
-import com.socialsupacrew.testlbc.rule.SchedulerRule
 import com.testlbc.data.interactor.GetAlbumsInteractor.Result
 import com.testlbc.data.repository.SongRepository
 import com.testlbc.data.repository.local.Song
+import com.testlbc.rules.MainCoroutineRule
 import com.testlbc.ui.albumlist.AlbumListViewModel.AlbumVM
-import io.reactivex.Flowable
+import com.testlbc.utils.assertLiveData
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.BDDMockito.given
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class GetAlbumsInteractorImplTest {
 
     @Rule
     @JvmField
     val instantTaskRule = InstantTaskExecutorRule()
 
-    @Rule
-    @JvmField
-    val schedulerRule = SchedulerRule()
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
 
-    @Mock
-    private lateinit var repository: SongRepository
-
-    @Mock
-    private lateinit var mapper: AlbumMapper
-
-    @Mock
-    private lateinit var songs: List<Song>
-
-    @Mock
-    private lateinit var albums: List<AlbumVM>
-
-    @Mock
-    private lateinit var throwable: Throwable
+    private val repository: SongRepository = mockk()
+    private val mapper: AlbumMapper = mockk()
+    private val songs: List<Song> = listOf(Song(1, 1, "", "", ""))
+    private val albums: List<AlbumVM> = listOf(AlbumVM(1, "", "", 1))
+    private val exception = Exception()
 
     private lateinit var subject: GetAlbumsInteractorImpl
 
@@ -49,34 +40,41 @@ class GetAlbumsInteractorImplTest {
         subject = GetAlbumsInteractorImpl(repository, mapper)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `execute - success`() {
-        `given repository`(Flowable.just(songs))
-        `given mapping`(albums)
+    fun `execute - success`() = runTest {
+        `given repository success`()
+        `given mapping`()
         `when interactor is executed`()
         `then live data should have result`(Result.OnSuccess(albums))
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `execute - error`() {
-        `given repository`(Flowable.error(throwable))
+    fun `execute - error`() = runTest {
+        `given repository error`()
         `when interactor is executed`()
         `then live data should have result`(Result.OnError)
     }
 
-    private fun `given repository`(flowable: Flowable<List<Song>>) {
-        given(repository.get()).willReturn(flowable)
+    private fun `given repository success`() {
+        coEvery { repository.get() } returns flowOf(songs)
     }
 
-    private fun `given mapping`(albums: List<AlbumVM>) {
-        given(mapper.map(songs)).willReturn(albums)
+    private fun `given repository error`() {
+        coEvery { repository.get() } throws exception
     }
 
-    private fun `when interactor is executed`() {
+    private fun `given mapping`() {
+        every { mapper.map(songs) } returns albums
+    }
+
+    @ExperimentalCoroutinesApi
+    private fun `when interactor is executed`() = runTest {
         subject.execute()
     }
 
     private fun `then live data should have result`(result: Result) {
-        assertThat(subject.getLiveData().value).isEqualTo(result)
+        assertLiveData(subject.getLiveData()).isEqualTo(result)
     }
 }

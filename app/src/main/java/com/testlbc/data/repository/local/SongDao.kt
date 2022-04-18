@@ -4,20 +4,19 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.reactivex.Flowable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SongDao {
     @Query("SELECT * FROM song ORDER BY albumId ASC, id ASC")
-    fun getAll(): Flowable<List<Song>>
+    fun getAll(): Flow<List<Song>>
 
     @Query("SELECT * FROM song WHERE albumId = :albumId")
-    fun getSongs(albumId: Int): Flowable<List<Song>>
+    fun getSongs(albumId: Int): Flow<List<Song>>
 
     @Query("SELECT * FROM song WHERE id = :songId")
-    fun getSong(songId: Int): Single<Song>
+    suspend fun getSong(songId: Int): Song
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(audioFile: Song)
+    suspend fun insert(audioFile: Song)
 }

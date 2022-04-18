@@ -2,8 +2,8 @@ package com.testlbc
 
 import android.app.Application
 import com.testlbc.data.repository.SongRepository
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -14,8 +14,6 @@ import timber.log.Timber
 class TestLBC : Application() {
 
     private val songRepository: SongRepository by inject()
-
-    private var disposable: Disposable? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -28,11 +26,6 @@ class TestLBC : Application() {
             modules(listOf(viewModelModule, dataModule, networkModule))
         }
 
-        disposable?.dispose()
-        disposable = songRepository.synchronise()
-            .subscribeOn(Schedulers.io())
-            .subscribe({
-                // ignore
-            }, Timber::e)
+        MainScope().launch { songRepository.synchronise() }
     }
 }

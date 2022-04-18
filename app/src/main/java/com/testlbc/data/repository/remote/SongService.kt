@@ -1,13 +1,12 @@
 package com.testlbc.data.repository.remote
 
 import com.google.gson.annotations.SerializedName
-import io.reactivex.Single
 import retrofit2.http.GET
 
 
 interface SongService {
     @GET("/img/shared/technical-test.json")
-    fun get(): Single<List<SongJson>>
+    suspend fun get(): List<SongJson>
 }
 
 data class SongJson(

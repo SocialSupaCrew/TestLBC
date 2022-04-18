@@ -3,8 +3,10 @@ package com.testlbc.ui.songdetail
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.testlbc.core.EventPath
 import com.testlbc.data.interactor.GetSongInteractor
+import kotlinx.coroutines.launch
 
 class SongDetailViewModelImpl(
     private val state: MediatorLiveData<State>,
@@ -26,12 +28,7 @@ class SongDetailViewModelImpl(
     }
 
     override fun fetchSong() {
-        interactor.execute(songId)
-    }
-
-    override fun onCleared() {
-        interactor.cleanUp()
-        super.onCleared()
+        viewModelScope.launch { interactor.execute(songId) }
     }
 
 

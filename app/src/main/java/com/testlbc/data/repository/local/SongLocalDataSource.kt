@@ -1,33 +1,32 @@
 package com.testlbc.data.repository.local
 
 import com.testlbc.data.repository.remote.SongJson
-import io.reactivex.Flowable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 interface SongLocalDataSource {
 
-    fun save(songs: List<SongJson>)
-    fun get(): Flowable<List<Song>>
-    fun getSongs(albumId: Int): Flowable<List<Song>>
-    fun getSong(songId: Int): Single<Song>
+    suspend fun save(songs: List<SongJson>)
+    suspend fun get(): Flow<List<Song>>
+    suspend fun getSongs(albumId: Int): Flow<List<Song>>
+    suspend fun getSong(songId: Int): Song
 }
 
 class SongLocalDataSourceImpl(private val database: AppDatabase) : SongLocalDataSource {
 
-    override fun save(songs: List<SongJson>) {
+    override suspend fun save(songs: List<SongJson>) {
         songs.map { toRoomEntity(it) }
             .forEach { database.songDao().insert(it) }
     }
 
-    override fun get(): Flowable<List<Song>> {
+    override suspend fun get(): Flow<List<Song>> {
         return database.songDao().getAll()
     }
 
-    override fun getSongs(albumId: Int): Flowable<List<Song>> {
+    override suspend fun getSongs(albumId: Int): Flow<List<Song>> {
         return database.songDao().getSongs(albumId)
     }
 
-    override fun getSong(songId: Int): Single<Song> {
+    override suspend fun getSong(songId: Int): Song {
         return database.songDao().getSong(songId)
     }
 

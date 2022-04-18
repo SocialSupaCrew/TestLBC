@@ -1,39 +1,33 @@
 package com.testlbc.data.interactor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.google.common.truth.Truth
-import com.socialsupacrew.testlbc.rule.SchedulerRule
 import com.testlbc.data.interactor.GetAlbumInteractor.Result
 import com.testlbc.data.repository.SongRepository
 import com.testlbc.data.repository.local.Song
-import io.reactivex.Flowable
+import com.testlbc.rules.MainCoroutineRule
+import com.testlbc.utils.assertLiveData
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.BDDMockito
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class GetAlbumInteractorImplTest {
 
     @Rule
     @JvmField
     val instantTaskRule = InstantTaskExecutorRule()
 
-    @Rule
-    @JvmField
-    val schedulerRule = SchedulerRule()
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
 
-    @Mock
-    private lateinit var repository: SongRepository
-
-    @Mock
-    private lateinit var songs: List<Song>
-
-    @Mock
-    private lateinit var throwable: Throwable
+    private val repository: SongRepository = mockk()
+    private val songs: List<Song> = listOf(Song(1, 1, "", "", ""))
+    private val exception = Exception()
 
     private lateinit var subject: GetAlbumInteractorImpl
 
@@ -42,30 +36,37 @@ class GetAlbumInteractorImplTest {
         subject = GetAlbumInteractorImpl(repository)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `execute - success`() {
-        `given repository`(Flowable.just(songs))
+    fun `execute - success`() = runTest {
+        `given repository success`()
         `when interactor is executed`()
         `then live data should have result`(Result.OnSuccess(songs))
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `execute - error`() {
-        `given repository`(Flowable.error(throwable))
+    fun `execute - error`() = runTest {
+        `given repository error`()
         `when interactor is executed`()
         `then live data should have result`(Result.OnError)
     }
 
-    private fun `given repository`(flowable: Flowable<List<Song>>) {
-        BDDMockito.given(repository.getSongs(ALBUM_ID)).willReturn(flowable)
+    private fun `given repository success`() {
+        coEvery { repository.getSongs(ALBUM_ID) } returns flowOf(songs)
     }
 
-    private fun `when interactor is executed`() {
+    private fun `given repository error`() {
+        coEvery { repository.getSongs(ALBUM_ID) } throws exception
+    }
+
+    @ExperimentalCoroutinesApi
+    private fun `when interactor is executed`() = runTest {
         subject.execute(ALBUM_ID)
     }
 
     private fun `then live data should have result`(result: Result) {
-        Truth.assertThat(subject.getLiveData().value).isEqualTo(result)
+        assertLiveData(subject.getLiveData()).isEqualTo(result)
     }
 
     companion object {

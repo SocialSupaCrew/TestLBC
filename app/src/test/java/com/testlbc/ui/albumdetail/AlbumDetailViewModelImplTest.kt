@@ -3,17 +3,23 @@ package com.testlbc.ui.albumdetail
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.testlbc.core.EventPath
 import com.testlbc.data.interactor.GetAlbumInteractor
 import com.testlbc.data.interactor.GetAlbumInteractor.Result
 import com.testlbc.data.repository.local.Song
+import com.testlbc.rules.MainCoroutineRule
 import com.testlbc.ui.albumdetail.AlbumDetailViewModel.Path
+import com.testlbc.ui.albumdetail.AlbumDetailViewModel.State
+import com.testlbc.utils.assertLiveData
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -22,29 +28,23 @@ import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
-import org.mockito.BDDMockito
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class AlbumDetailViewModelImplTest : KoinTest {
 
     @Rule
     @JvmField
     val instantTaskRule = InstantTaskExecutorRule()
 
-    @Mock
-    lateinit var getAlbumInteractor: GetAlbumInteractor
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
 
-    @Mock
-    lateinit var songs: List<Song>
-
-    @Mock
-    lateinit var observer: Observer<AlbumDetailViewModel.State>
+    private val getAlbumInteractor: GetAlbumInteractor = mockk()
+    private val songs: List<Song> = listOf(Song(1, 1, "", "", ""))
 
     private lateinit var subject: AlbumDetailViewModelImpl
 
-    private val state: MediatorLiveData<AlbumDetailViewModel.State> = MediatorLiveData()
+    private val state: MediatorLiveData<State> = MediatorLiveData()
     private val navigation: MutableLiveData<EventPath<Path>> = MutableLiveData()
     private val getSongInteractorLiveData: MutableLiveData<Result> = MutableLiveData()
 
@@ -68,29 +68,28 @@ class AlbumDetailViewModelImplTest : KoinTest {
     }
 
     private fun setUpLiveData() {
-        state.observeForever(observer)
-        BDDMockito.given(getAlbumInteractor.getLiveData()).willReturn(getSongInteractorLiveData)
+        every { getAlbumInteractor.getLiveData() } returns getSongInteractorLiveData
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `fetchSongs - execute`() {
+    fun `fetchSongs - execute`() = runTest {
         `when songs are fetched`()
         `then interactor should be executed`()
-        `then interactor should have no more interactions`()
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `fetchSongs - success`() {
+    fun `fetchSongs - success`() = runTest {
         `when fetched songs has result`(Result.OnSuccess(songs))
-        `then state observer should receive state`(
-            AlbumDetailViewModel.State.SongsLoaded(songs)
-        )
+        `then state observer should receive state`(State.SongsLoaded(songs))
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun `fetchSongs - error`() {
+    fun `fetchSongs - error`() = runTest {
         `when fetched songs has result`(Result.OnError)
-        `then state observer should receive state`(AlbumDetailViewModel.State.ShowError)
+        `then state observer should receive state`(State.ShowError)
     }
 
     private fun `when songs are fetched`() {
@@ -102,17 +101,11 @@ class AlbumDetailViewModelImplTest : KoinTest {
     }
 
     private fun `then interactor should be executed`() {
-        BDDMockito.then(getAlbumInteractor).should().execute(ALBUM_ID)
+        coVerify { getAlbumInteractor.execute(ALBUM_ID) }
     }
 
-    private fun `then interactor should have no more interactions`() {
-        BDDMockito.then(getAlbumInteractor).should().getLiveData()
-        BDDMockito.then(getAlbumInteractor).shouldHaveNoMoreInteractions()
-    }
-
-    private fun `then state observer should receive state`(state: AlbumDetailViewModel.State) {
-        BDDMockito.then(observer).should().onChanged(state)
-        BDDMockito.then(observer).shouldHaveNoMoreInteractions()
+    private fun `then state observer should receive state`(state: State) {
+        assertLiveData(subject.getState()).isEqualTo(state)
     }
 
     companion object {

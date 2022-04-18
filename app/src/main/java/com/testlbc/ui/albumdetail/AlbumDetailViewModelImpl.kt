@@ -3,8 +3,10 @@ package com.testlbc.ui.albumdetail
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.testlbc.core.EventPath
 import com.testlbc.data.interactor.GetAlbumInteractor
+import kotlinx.coroutines.launch
 
 class AlbumDetailViewModelImpl(
     private val state: MediatorLiveData<State>,
@@ -26,16 +28,11 @@ class AlbumDetailViewModelImpl(
     }
 
     override fun fetchSongs() {
-        interactor.execute(albumId)
+        viewModelScope.launch { interactor.execute(albumId) }
     }
 
     override fun onSongClicked(songId: Int) {
         navigateTo(Path.SongDetail(songId))
-    }
-
-    override fun onCleared() {
-        interactor.cleanUp()
-        super.onCleared()
     }
 
     private fun onFetchSongsResult(result: GetAlbumInteractor.Result) {

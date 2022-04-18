@@ -3,8 +3,10 @@ package com.testlbc.ui.albumlist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.testlbc.core.EventPath
 import com.testlbc.data.interactor.GetAlbumsInteractor
+import kotlinx.coroutines.launch
 
 class AlbumListViewModelImpl(
     private val state: MediatorLiveData<State>,
@@ -25,16 +27,11 @@ class AlbumListViewModelImpl(
     }
 
     override fun fetchAlbums() {
-        interactor.execute()
+        viewModelScope.launch { interactor.execute() }
     }
 
     override fun onAlbumClicked(albumId: Int) {
         navigateTo(Path.AlbumDetail(albumId))
-    }
-
-    override fun onCleared() {
-        interactor.cleanUp()
-        super.onCleared()
     }
 
     private fun onFetchAlbumsResult(result: GetAlbumsInteractor.Result) {

@@ -5,8 +5,8 @@ import com.testlbc.core.domain.Interactor
 import com.testlbc.data.interactor.GetSongInteractor.Result
 import com.testlbc.data.repository.SongRepository
 import com.testlbc.data.repository.local.Song
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 interface GetSongInteractor : Interactor<Result> {
@@ -16,19 +16,21 @@ interface GetSongInteractor : Interactor<Result> {
         object OnError : Result()
     }
 
-    fun execute(songId: Int)
+    suspend fun execute(songId: Int)
 }
 
 class GetSongInteractorImpl(
     private val repository: SongRepository
 ) : BaseInteractor<Result>(), GetSongInteractor {
 
-    override fun execute(songId: Int) {
-        repository.getSong(songId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onSuccess, ::onError)
-            .track()
+    override suspend fun execute(songId: Int) {
+        withContext(Dispatchers.Main) {
+            try {
+                onSuccess(repository.getSong(songId))
+            } catch (e: Exception) {
+                onError(e)
+            }
+        }
     }
 
     private fun onSuccess(song: Song) {
