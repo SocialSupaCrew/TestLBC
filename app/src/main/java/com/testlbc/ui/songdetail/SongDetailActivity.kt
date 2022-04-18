@@ -3,16 +3,16 @@ package com.testlbc.ui.songdetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.squareup.picasso.Picasso
 import com.testlbc.R
+import com.testlbc.core.BaseActivity
 import com.testlbc.data.repository.local.Song
 import com.testlbc.databinding.ActivitySongDetailBinding
 import com.testlbc.ui.songdetail.SongDetailViewModel.State
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SongDetailActivity : AppCompatActivity() {
+class SongDetailActivity : BaseActivity() {
 
     private val songId by lazy { intent.getIntExtra(EXTRA_SONG_ID, 0) }
 
