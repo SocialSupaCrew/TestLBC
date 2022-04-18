@@ -25,7 +25,7 @@ class AlbumListActivity : BaseActivity() {
 
         binding.albumList.layoutManager = LinearLayoutManager(this)
         binding.albumList.addItemDecoration(
-            DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL)
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         )
         binding.albumList.adapter = adapter
 

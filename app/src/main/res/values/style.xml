@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="rounded_square_small" parent="">
-        <item name="cornerSize">4dp</item>
-        <item name="cornerFamily">rounded</item>
-    </style>
-
-    <style name="rounded_square_medium" parent="">
-        <item name="cornerSize">16dp</item>
-        <item name="cornerFamily">rounded</item>
-    </style>
-
-    <style name="rounded_square_large" parent="">
-        <item name="cornerSize">16dp</item>
+    <style name="rounded_square" parent="">
+        <item name="cornerSize">12dp</item>
         <item name="cornerFamily">rounded</item>
     </style>
 </resources>

@@ -1,5 +1,6 @@
 package com.testlbc.ui.albumdetail
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -31,8 +32,8 @@ class AlbumDetailViewModelImpl(
         viewModelScope.launch { interactor.execute(albumId) }
     }
 
-    override fun onSongClicked(songId: Int) {
-        navigateTo(Path.SongDetail(songId))
+    override fun onSongClicked(songId: Int, thumbnail: View) {
+        navigateTo(Path.SongDetail(songId, thumbnail))
     }
 
     private fun onFetchSongsResult(result: GetAlbumInteractor.Result) {

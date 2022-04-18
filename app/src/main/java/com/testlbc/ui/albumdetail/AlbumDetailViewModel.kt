@@ -1,5 +1,6 @@
 package com.testlbc.ui.albumdetail
 
+import android.view.View
 import com.testlbc.core.BaseViewModel
 import com.testlbc.core.EventPath
 import com.testlbc.data.repository.local.Song
@@ -14,7 +15,7 @@ abstract class AlbumDetailViewModel : BaseViewModel<State, Path>(), AlbumDetailH
     }
 
     sealed class Path : EventPath.Path {
-        data class SongDetail(val songId: Int) : Path()
+        data class SongDetail(val songId: Int, val thumbnail: View) : Path()
     }
 
     abstract fun fetchSongs()

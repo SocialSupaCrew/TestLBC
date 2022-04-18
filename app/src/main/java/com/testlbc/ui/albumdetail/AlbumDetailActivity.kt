@@ -3,6 +3,8 @@ package com.testlbc.ui.albumdetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.testlbc.core.BaseActivity
 import com.testlbc.core.EventPathObserver
@@ -27,6 +29,11 @@ class AlbumDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.run {
+            setDisplayHomeAsUpEnabled(true)
+        }
+
         viewModel.getState().observe(this, ::applyState)
         viewModel.getNavigation().observe(this, EventPathObserver { navigateTo(it as Path) })
 
@@ -44,11 +51,16 @@ class AlbumDetailActivity : BaseActivity() {
     }
 
     private fun navigateTo(path: Path) = when (path) {
-        is Path.SongDetail -> openSongDetail(path.songId)
+        is Path.SongDetail -> openSongDetail(path.songId, path.thumbnail)
     }
 
-    private fun openSongDetail(songId: Int) {
-        startActivity(SongDetailActivity.newIntent(this, songId))
+    private fun openSongDetail(songId: Int, thumbnail: View) {
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            this,
+            thumbnail,
+            thumbnail.transitionName
+        )
+        startActivity(SongDetailActivity.newIntent(this, songId), options.toBundle())
     }
 
     companion object {

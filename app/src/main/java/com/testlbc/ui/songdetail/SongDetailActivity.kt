@@ -3,6 +3,7 @@ package com.testlbc.ui.songdetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import com.squareup.picasso.Picasso
 import com.testlbc.R
 import com.testlbc.core.BaseActivity
@@ -24,9 +25,24 @@ class SongDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.run {
+            setDisplayHomeAsUpEnabled(true)
+        }
+
         viewModel.getState().observe(this, ::applyState)
 
         viewModel.fetchSong()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                supportFinishAfterTransition()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun applyState(state: State) = when (state) {

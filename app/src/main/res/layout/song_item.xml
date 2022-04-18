@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_item">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/thumbnail"
@@ -13,10 +14,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:scaleType="centerCrop"
+        android:transitionName="thumbnail"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearance="@style/rounded_square_small"
+        app:shapeAppearance="@style/rounded_square"
         tools:src="#ABCDEF" />
 
     <TextView

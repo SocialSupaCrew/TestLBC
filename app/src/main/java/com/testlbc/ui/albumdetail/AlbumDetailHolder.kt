@@ -1,6 +1,7 @@
 package com.testlbc.ui.albumdetail
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
@@ -26,10 +27,10 @@ class AlbumDetailHolder(
             .placeholder(R.drawable.placeholder_song)
             .into(binding.thumbnail)
 
-        binding.root.setOnClickListener { listener.onSongClicked(song.id) }
+        binding.root.setOnClickListener { listener.onSongClicked(song.id, binding.thumbnail) }
     }
 
     interface Listener {
-        fun onSongClicked(songId: Int)
+        fun onSongClicked(songId: Int, thumbnail: View)
     }
 }
