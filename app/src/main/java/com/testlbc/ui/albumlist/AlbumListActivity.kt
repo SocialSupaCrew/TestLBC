@@ -1,6 +1,8 @@
 package com.testlbc.ui.albumlist
 
 import android.os.Bundle
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -9,6 +11,7 @@ import com.testlbc.core.EventPathObserver
 import com.testlbc.databinding.ActivityAlbumListBinding
 import com.testlbc.ui.albumdetail.AlbumDetailActivity
 import com.testlbc.ui.albumlist.AlbumListViewModel.Path
+import com.testlbc.ui.albumlist.AlbumListViewModel.State
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AlbumListActivity : BaseActivity() {
@@ -35,11 +38,16 @@ class AlbumListActivity : BaseActivity() {
         viewModel.fetchAlbums()
     }
 
-    private fun applyState(state: AlbumListViewModel.State) = when (state) {
-        is AlbumListViewModel.State.AlbumsLoaded -> adapter.items = state.items
-        AlbumListViewModel.State.ShowError -> showError()
-        AlbumListViewModel.State.ShowLoading -> {
-            // TODO: show loading
+    private fun applyState(state: State) = when (state) {
+        is State.AlbumsLoaded -> {
+            binding.progress.isGone = state.items.isNotEmpty()
+            binding.albumList.isVisible = state.items.isNotEmpty()
+            adapter.items = state.items
+        }
+        State.ShowError -> showError()
+        State.ShowLoading -> {
+            binding.progress.isVisible = true
+            binding.albumList.isGone = true
         }
     }
 

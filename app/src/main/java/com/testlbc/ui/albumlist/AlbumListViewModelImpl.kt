@@ -38,6 +38,7 @@ class AlbumListViewModelImpl(
         state.value = when (result) {
             is GetAlbumsInteractor.Result.OnSuccess -> State.AlbumsLoaded(result.albums)
             GetAlbumsInteractor.Result.OnError -> State.ShowError
+            GetAlbumsInteractor.Result.OnLoading -> State.ShowLoading
         }
     }
 }

@@ -15,6 +15,7 @@ interface GetAlbumsInteractor : Interactor<Result> {
     sealed class Result {
         data class OnSuccess(val albums: List<AlbumVM>) : Result()
         object OnError : Result()
+        object OnLoading : Result()
     }
 
     suspend fun execute()
@@ -26,6 +27,7 @@ class GetAlbumsInteractorImpl(
 ) : BaseInteractor<Result>(), GetAlbumsInteractor {
 
     override suspend fun execute() {
+        liveData.value = Result.OnLoading
         withContext(Dispatchers.Main) {
             try {
                 repository.get().collect {
